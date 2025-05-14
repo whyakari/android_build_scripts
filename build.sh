@@ -1,16 +1,11 @@
 #!/bin/bash
 set -e
 
-# 
-# Credit to Meghthedev 
-# for the initial script.
-
 export DEVICE="fogos"
 export PROJECTFOLDER="Pixel15"
 export PROJECTID="82"
 export REPO_INIT="repo init -u https://github.com/PixelOS-AOSP/manifest.git -b fifteen --git-lfs --depth=1"
 export BUILD_DIFFERENT_ROM="$REPO_INIT"
-OUT_DIR="$PROJECTFOLDER/out/target/product/$DEVICE"
 
 if (grep -q "$PROJECTFOLDER" <(crave clone list --json | jq -r '.clones[]."Cloned At"')) || [ "${DCDEVSPACE}" == "1" ]; then   
    crave clone destroy -y /crave-devspaces/$PROJECTFOLDER || echo "Error removing $PROJECTFOLDER"
@@ -43,13 +38,7 @@ lunch aosp_$DEVICE-bp1a-userdebug && \
 mka bacon
 "
 
-cd ..
-
-if grep -q "$PROJECTFOLDER" <(crave clone list --json | jq -r '.clones[]."Cloned At"') || [ "${DCDEVSPACE}" == "1" ]; then
-  crave clone destroy -y /crave-devspaces/$PROJECTFOLDER || echo "Error removing $PROJECTFOLDER"
-else  
-  rm -rf $PROJECTFOLDER || true
-fi
+OUT_DIR="/crave-devspaces/$PROJECTFOLDER/out/target/product/$DEVICE"
 
 ROM_ZIP=$(find "$OUT_DIR" -type f -name "*.zip" | head -n 1)
 BOOT_IMG="$OUT_DIR/boot.img"
@@ -62,7 +51,12 @@ chmod +x go-up
 ./go-up "$ROM_ZIP"
 ./go-up "$BOOT_IMG"
 ./go-up "$DTBO_IMG"
-
 if [ -f "$VENDOR_BOOT_IMG" ]; then
-    ./go-up "$VENDOR_BOOT_IMG" "$other"
+    ./go-up "$VENDOR_BOOT_IMG"
+fi
+
+if grep -q "$PROJECTFOLDER" <(crave clone list --json | jq -r '.clones[]."Cloned At"') || [ "${DCDEVSPACE}" == "1" ]; then
+  crave clone destroy -y /crave-devspaces/$PROJECTFOLDER || echo "Error removing $PROJECTFOLDER"
+else  
+  rm -rf $PROJECTFOLDER || true
 fi
