@@ -5,6 +5,7 @@ set -e
 # Credit to Meghthedev 
 # for the initial script.
 
+export DEVICE="fogos"
 export PROJECTFOLDER="Pixel15"
 export PROJECTID="82"
 export REPO_INIT="repo init -u https://github.com/PixelOS-AOSP/manifest.git -b fifteen --git-lfs --depth=1"
@@ -33,7 +34,7 @@ $BUILD_DIFFERENT_ROM && \
 git clone https://github.com/sm6375-PixelOS/local_manifests -b fifteen .repo/local_manifests \
 /opt/crave/resync.sh && \ 
 source build/envsetup.sh && \
-lunch aosp_bangkk-bp1a-userdebug && \
+lunch aosp_$DEVICE-bp1a-userdebug && \
 mka bacon"
 
 cd ..
