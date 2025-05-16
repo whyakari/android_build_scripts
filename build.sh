@@ -7,22 +7,6 @@ export PROJECTID="82"
 export REPO_INIT="repo init -u https://github.com/PixelOS-AOSP/manifest.git -b fifteen --git-lfs --depth=1"
 export BUILD_DIFFERENT_ROM="$REPO_INIT"
 
-if (grep -q "$PROJECTFOLDER" <(crave clone list --json | jq -r '.clones[]."Cloned At"')) || [ "${DCDEVSPACE}" == "1" ]; then   
-   crave clone destroy -y /crave-devspaces/$PROJECTFOLDER || echo "Error removing $PROJECTFOLDER"
-else
-   rm -rf $PROJECTFOLDER || true
-fi
-
-if [ "${DCDEVSPACE}" == "1" ]; then
-   crave clone create --projectID $PROJECTID /crave-devspaces/$PROJECTFOLDER || echo "Crave clone create failed!"
-   cd /crave-devspaces/$PROJECTFOLDER
-else
-   mkdir $PROJECTFOLDER
-   cd $PROJECTFOLDER
-   echo "Running $REPO_INIT"
-   $REPO_INIT
-fi
-
 # RUN inside foss.crave.io devspace
 crave run --no-patch -- "
 rm -rf .repo/local_manifests && \
